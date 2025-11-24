@@ -62,11 +62,11 @@ roc_RF_train <- roc(SEPSISdat_train$inhospital_mortality, train_pred) # training
 roc_RF_test <- roc(SEPSISdat_test$inhospital_mortality, test_pred) # testing AUC 
 
 # plot ROC curvce
-plot(roc_RF, main = paste0("RF Training AUC = ", round(roc_RF_train$auc, 3)))
-plot(roc_RF, main = paste0("RF Testing AUC = ", round(roc_RF_test$auc, 3)))
+plot(roc_RF_train, main = paste0("RF Training AUC = ", round(roc_RF_train$auc, 3)))
+plot(roc_RF_test, main = paste0("RF Testing AUC = ", round(roc_RF_test$auc, 3)))
 
 threshold <- coords(
-  roc_RF, 
+  roc_RF_train, 
   "best", 
   best.method = "youden", # J = sensitivity + specificity - 1
   ret = "threshold"
@@ -86,3 +86,26 @@ myModel <- list(
 
 dput(myModel) # print model threshold & path
 
+# model performance 
+source(file.path("..","scoring","evaluate_performance.R"))
+res<-NULL
+
+res <- rbind(
+  res,
+  evaluate_model(SEPSISdat_train$inhospital_mortality,
+                 train_pred,
+                 as.numeric(threshold),
+                 "Training",
+                 0) # training
+)
+res <- rbind(
+  res,
+  evaluate_model(SEPSISdat_test$inhospital_mortality,
+                 test_pred,
+                 as.numeric(threshold),
+                 "Testing",
+                 0) # testing
+)
+  
+
+print(res)
