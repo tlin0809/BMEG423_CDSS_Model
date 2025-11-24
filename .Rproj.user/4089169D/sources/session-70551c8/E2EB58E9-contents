@@ -1,8 +1,8 @@
-###############################################################################
-# Random Forest Model Training for Sepsis Prediction
-# Follows same structure as the provided LightGBM example
 # Team: Team 3
-###############################################################################
+
+# Author: Traye Lin 
+
+# Version: RF Model 1
 
 # set working directory (for myself)
 setwd("C:\\Users\\Traye Lin's Laptop\\OneDrive - UBC\\Desktop\\BMEG423\\Traye_R_model")
@@ -64,11 +64,11 @@ summary(train_pred) # check distribution
 # ROC, determine threshold by Youden index (same as provided gbm model)
 library(pROC)
 
-roc_RF <- roc(SEPSISdat_train$inhospital_mortality, train_pred) # training AUC
+roc_RF_train <- roc(SEPSISdat_train$inhospital_mortality, train_pred) # training AUC
 roc_RF_test <- roc(SEPSISdat_test$inhospital_mortality, test_pred) # testing AUC 
 
 # plot ROC curvce
-plot(roc_RF, main = paste0("RF Training AUC = ", round(roc_RF$auc, 3)))
+plot(roc_RF, main = paste0("RF Training AUC = ", round(roc_RF_train$auc, 3)))
 plot(roc_RF, main = paste0("RF Testing AUC = ", round(roc_RF_test$auc, 3)))
 
 threshold <- coords(
@@ -90,5 +90,5 @@ myModel <- list(
   model_path = paste0(team, "_RF_model.1.rds")
 )
 
-dput(myModel) # quick check
+dput(myModel) # print model threshold & path
 
