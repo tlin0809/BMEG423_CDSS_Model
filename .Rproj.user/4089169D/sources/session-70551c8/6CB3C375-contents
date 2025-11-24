@@ -1,0 +1,94 @@
+###############################################################################
+# Random Forest Model Training for Sepsis Prediction
+# Follows same structure as the provided LightGBM example
+# Team: Team 3
+###############################################################################
+
+# set working directory (for myself)
+setwd("C:\\Users\\Traye Lin's Laptop\\OneDrive - UBC\\Desktop\\BMEG423\\r_modelBuilding")
+
+## Clear workspace
+rm(list = ls())
+
+## TeamName
+team <- "Team 3"
+
+## Load helper function to read data
+source("load_data.R")
+
+# load datasets
+SEPSISdat_train <- load_data("train")
+SEPSISdat_test  <- load_data("test")
+
+# print mortality rate - should be the same as training_gbm.R (nothing changed yet)
+cat("Training mortality rate:", mean(SEPSISdat_train$inhospital_mortality), "\n")
+cat("Testing mortality rate:",  mean(SEPSISdat_test$inhospital_mortality), "\n")
+
+# data cleaning - following training_gbm.R (nothing changed yet)
+library(mice)
+SEPSISdat_train <- complete(mice(SEPSISdat_train, method = "pmm", m = 1))
+SEPSISdat_test  <- complete(mice(SEPSISdat_test,  method = "pmm", m = 1))
+
+###############################################################################
+# 3. Add Derived Variables (Shock Index)
+###############################################################################
+SEPSISdat_train$SI <- SEPSISdat_train$hr_bpm_adm / SEPSISdat_train$sysbp_mmhg_adm
+SEPSISdat_test$SI  <- SEPSISdat_test$hr_bpm_adm  / SEPSISdat_test$sysbp_mmhg_adm
+
+###############################################################################
+# 4. Build a Random Forest Model using ranger
+###############################################################################
+library(ranger)
+
+# Train the model (probability=TRUE gives class probabilities)
+rf_model <- ranger(
+  formula = as.factor(inhospital_mortality) ~ .,
+  data = SEPSISdat_train,
+  probability = TRUE,        # ensure probabilistic output
+  num.trees = 800,           # higher trees improve AUC, still fast
+  mtry = floor(sqrt(ncol(SEPSISdat_train))),  # standard RF rule
+  min.node.size = 10,        # prevents overfitting
+  importance = "impurity"
+)
+
+###############################################################################
+# 5. Generate Predictions and Choose a Classification Threshold
+###############################################################################
+train_pred <- rf_model$predictions[, 2]   # second column = P(mortality=1)
+test_pred  <- predict(rf_model, SEPSISdat_test)$predictions[, 2]
+
+# Compute ROC and determine threshold via Youden index (“best” method)
+library(pROC)
+roc_RF <- roc(SEPSISdat_train$inhospital_mortality, train_pred)
+
+# Plot ROC curve for visual inspection
+plot(roc_RF, main = paste0("RF Training AUC = ", round(roc_RF$auc, 3)))
+
+threshold <- coords(
+  roc_RF, 
+  "best", 
+  best.method = "youden", 
+  ret = "threshold"
+)
+
+cat("Selected threshold:", threshold, "\n")
+
+###############################################################################
+# 6. Save Model to Disk
+###############################################################################
+saveRDS(rf_model, paste0(team, "_RF_model.rds"))
+
+###############################################################################
+# 7. Prepare Values Needed for load_sepsis_model()
+###############################################################################
+myModel <- list(
+  thresh = round(as.numeric(threshold), 3),
+  model_path = paste0(team, "_RF_model.rds")
+)
+
+# Print model settings in dput format for pasting into load_sepsis_model()
+dput(myModel)
+
+###############################################################################
+# 8. Evaluate Training and Testing Performance Using Provided Script
+######################################
