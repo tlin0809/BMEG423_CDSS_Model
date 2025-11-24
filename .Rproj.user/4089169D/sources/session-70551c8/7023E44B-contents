@@ -2,7 +2,7 @@
 
 # Author: Traye Lin 
 
-# Version: RF Model 1
+# Version: RF Model 2
 
 # set working directory (for myself)
 setwd("C:\\Users\\Traye Lin's Laptop\\OneDrive - UBC\\Desktop\\BMEG423\\Traye_R_model")
@@ -118,6 +118,5 @@ res <- rbind(
                  "Testing",
                  0) # testing
 )
-
 
 print(res)
