@@ -35,8 +35,14 @@ SEPSISdat_test  <- complete(mice(SEPSISdat_test,  method = "pmm", m = 1))
 SEPSISdat_train$SI <- SEPSISdat_train$hr_bpm_adm / SEPSISdat_train$sysbp_mmhg_adm
 SEPSISdat_test$SI  <- SEPSISdat_test$hr_bpm_adm  / SEPSISdat_test$sysbp_mmhg_adm
 
+###############################################################################
+# to be implemented - SMOTE to balance datasets
+
+###############################################################################
+
+
 # Random Forest model using ranger
-library(ranger) # may need to install ranger if you haven't
+library(ranger)
 
 rf_model <- ranger(
   formula = as.factor(inhospital_mortality) ~ .,
