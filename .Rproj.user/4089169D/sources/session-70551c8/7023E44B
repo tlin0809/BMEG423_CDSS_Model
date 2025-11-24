@@ -1,11 +1,11 @@
 {
     "id": "7023E44B",
-    "path": null,
-    "project_path": null,
+    "path": "C:/Users/Traye Lin's Laptop/OneDrive - UBC/Desktop/BMEG423/Traye_R_model/training_rf.2.R",
+    "project_path": "training_rf.2.R",
     "type": "r_source",
-    "hash": "1225658864",
+    "hash": "0",
     "contents": "",
-    "dirty": true,
+    "dirty": false,
     "created": 1763946941413.0,
     "source_on_save": false,
     "relative_order": 6,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "94,0",
-        "scrollLine": "76"
+        "cursorPosition": "80,17",
+        "scrollLine": "71"
     },
     "folds": "",
-    "lastKnownWriteTime": 1942494870440,
-    "encoding": "",
+    "lastKnownWriteTime": 1763953443,
+    "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1763946945462,
+    "last_content_update": 1763953443328,
     "read_only": false,
     "read_only_alternatives": []
 }
